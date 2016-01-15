@@ -21,7 +21,7 @@
   },
   "license": "CC0-1.0",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha ./test/*.js ./build/test/*.js"
   },
   "author": {
     "name": "Devi Mandiri",

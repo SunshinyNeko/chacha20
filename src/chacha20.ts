@@ -25,7 +25,7 @@ function ROTATE(v, c) {
 export class Chacha20 {
   private input: Uint32Array;
   
-  constructor(key: Buffer, nonce: Buffer, counter: number) {
+  constructor(key: Buffer, nonce: Buffer, counter?: number) {
     this.input = new Uint32Array(16);
 
     // https://tools.ietf.org/html/draft-irtf-cfrg-chacha20-poly1305-01#section-2.3
@@ -58,20 +58,24 @@ export class Chacha20 {
     
   }
   
-  quarterRound(x, a, b, c, d) {
-    x[a] += x[b]; x[d] = ROTATE(x[d] ^ x[a], 16);
-    x[c] += x[d]; x[b] = ROTATE(x[b] ^ x[c], 12);
-    x[a] += x[b]; x[d] = ROTATE(x[d] ^ x[a],  8);
-    x[c] += x[d]; x[b] = ROTATE(x[b] ^ x[c],  7);
-  }
-  
   update(raw: Buffer): Buffer {
     let cipherText = new Buffer(raw.length);
     this.encrypt(cipherText, raw, raw.length);
     return cipherText;
   }
   
-  encrypt(dst: Buffer, src: Buffer, len: number) {
+  final(): Buffer {
+    return new Buffer(0);
+  }
+  
+  private quarterRound(x, a, b, c, d) {
+    x[a] += x[b]; x[d] = ROTATE(x[d] ^ x[a], 16);
+    x[c] += x[d]; x[b] = ROTATE(x[b] ^ x[c], 12);
+    x[a] += x[b]; x[d] = ROTATE(x[d] ^ x[a],  8);
+    x[c] += x[d]; x[b] = ROTATE(x[b] ^ x[c],  7);
+  }
+  
+  private encrypt(dst: Buffer, src: Buffer, len: number) {
     let x = new Uint32Array(16);
     let output = new Uint8Array(64);
     let i, dpos = 0, spos = 0;

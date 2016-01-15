@@ -49,6 +49,14 @@ var Chacha20 = (function () {
             this.input[15] = U8TO32_LE(nonce, 4);
         }
     }
+    Chacha20.prototype.update = function (raw) {
+        var cipherText = new Buffer(raw.length);
+        this.encrypt(cipherText, raw, raw.length);
+        return cipherText;
+    };
+    Chacha20.prototype.final = function () {
+        return new Buffer(0);
+    };
     Chacha20.prototype.quarterRound = function (x, a, b, c, d) {
         x[a] += x[b];
         x[d] = ROTATE(x[d] ^ x[a], 16);
@@ -58,11 +66,6 @@ var Chacha20 = (function () {
         x[d] = ROTATE(x[d] ^ x[a], 8);
         x[c] += x[d];
         x[b] = ROTATE(x[b] ^ x[c], 7);
-    };
-    Chacha20.prototype.update = function (raw) {
-        var cipherText = new Buffer(raw.length);
-        this.encrypt(cipherText, raw, raw.length);
-        return cipherText;
     };
     Chacha20.prototype.encrypt = function (dst, src, len) {
         var x = new Uint32Array(16);
